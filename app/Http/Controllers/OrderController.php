@@ -141,9 +141,11 @@ class OrderController extends Controller
                 "message" => "Mobil dengan plat nomor tersebut tidak ditemukan",
             ], 404);
         }
+        $return_date = date('Y-m-d');
         $order = Order::where('user_id', $user_id)
             ->where('car_id', $car->id)
             ->where('status', 'ongoing')
+            ->orderBy('start_date')
             ->first();
 
         if (!$order) {
@@ -152,10 +154,18 @@ class OrderController extends Controller
                 "message" => "Pemesanan dengan plat nomor tersebut tidak ditemukan",
             ], 404);
         }
+
+        if ($return_date < $order->start_date) {
+            return response()->json([
+                "status" => "error",
+                "message" => "Mobil belum mulai dipinjam",
+            ], 404);
+        }
+
         DB::beginTransaction();
         try {
 
-            $return_date = date('Y-m-d');
+            
             $startDate = new \DateTime($order->start_date);
             $endDate = new \DateTime($return_date);
             $interval = $startDate->diff($endDate);
@@ -180,6 +190,7 @@ class OrderController extends Controller
         return response()->json([
             "status" => "success",
             "data" => $order,
+            "asd" => $return_date .' - '. $order->start_date,
         ], 201);
 
 
