@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CustomerController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -44,6 +45,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/users', [AuthController::class, 'registerAdmin']);
         Route::post('/users/{id}', [AuthController::class, 'updateAdmin']);
         Route::delete('/users/{id}', [AuthController::class, 'destroyAdmin']);
+
+        Route::get('/customers', [CustomerController::class, 'index']);
+        Route::post('/customers/{id}', [CustomerController::class, 'update']);
+        Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
     });
     
     
