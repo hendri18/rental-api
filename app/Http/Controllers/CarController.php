@@ -23,8 +23,10 @@ class CarController extends Controller
             $query->leftJoin('orders', function ($join) use ($start_date, $end_date) {
                 $join->on('cars.id', '=', 'orders.car_id')
                     ->where('orders.status', 'ongoing')
-                    ->where('orders.start_date', '>=', $start_date)
-                    ->where('orders.end_date', '<=', $end_date);
+                    ->where(function ($q) use ($start_date, $end_date) {
+                        $q->whereRaw('? BETWEEN orders.start_date AND orders.end_date', [$start_date])
+                            ->orWhereRaw('? BETWEEN orders.start_date AND orders.end_date', [$end_date]);
+                    });
             });
 
             if ($request->available) {

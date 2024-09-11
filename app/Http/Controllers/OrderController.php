@@ -80,8 +80,10 @@ class OrderController extends Controller
 
             $checkAvailability = Order::where('car_id', $car->id)
                 ->where('status', 'ongoing')
-                ->where('start_date', '>=', $start_date)
-                ->where('end_date', '<=', $end_date)
+                ->where(function ($q) use ($start_date, $end_date) {
+                    $q->whereRaw('? BETWEEN orders.start_date AND orders.end_date', [$start_date])
+                        ->orWhereRaw('? BETWEEN orders.start_date AND orders.end_date', [$end_date]);
+                })
                 ->first();
 
             if ($checkAvailability) {
